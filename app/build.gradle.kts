@@ -47,4 +47,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     // Firebase Authentication dependency
     implementation("com.google.firebase:firebase-auth-ktx:21.0.1")
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+    implementation("com.google.firebase:firebase-analytics")
 }

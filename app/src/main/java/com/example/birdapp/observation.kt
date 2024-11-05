@@ -2,11 +2,16 @@ package com.example.birdapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.TimePicker
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -55,4 +60,43 @@ class observation : AppCompatActivity() {
             notesEditText.text.clear()
         }
     }
+
+
 }
+data class Observation(
+    val speciesName: String,
+    val date: String,
+    val time: String,
+    val location: String,
+    val notes: String
+)
+
+class ObservationAdapter(private val observations: List<Observation>) :
+    RecyclerView.Adapter<ObservationAdapter.ObservationViewHolder>() {
+
+    class ObservationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val speciesNameTextView: TextView = itemView.findViewById(R.id.speciesNameTextView)
+        val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
+        val timeTextView: TextView = itemView.findViewById(R.id.timeTextView)
+        val locationTextView: TextView = itemView.findViewById(R.id.locationTextView)
+        val notesTextView: TextView = itemView.findViewById(R.id.notesTextView)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ObservationViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_observation, parent, false)
+        return ObservationViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ObservationViewHolder, position: Int) {
+        val observation = observations[position]
+        holder.speciesNameTextView.text = observation.speciesName
+        holder.dateTextView.text = observation.date
+        holder.timeTextView.text = observation.time
+        holder.locationTextView.text = observation.location
+        holder.notesTextView.text = observation.notes
+    }
+
+    override fun getItemCount(): Int = observations.size
+}
+

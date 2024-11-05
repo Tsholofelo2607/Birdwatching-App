@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "85792873764",
+    "project_id": "birdwatching-app-83f0b",
+    "storage_bucket": "birdwatching-app-83f0b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:85792873764:android:0d0b4a047372a7c67ca7b1",
+        "android_client_info": {
+          "package_name": "com.example.birdapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXV7l8zNDIOD8eBsX3AgpjDO9KhwqxKck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

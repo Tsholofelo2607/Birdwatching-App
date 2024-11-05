@@ -15,6 +15,9 @@
         android:theme="@style/Theme.BirdApp"
         tools:targetApi="31">
         <activity
+            android:name=".ObservationList"
+            android:exported="false" />
+        <activity
             android:name=".observation"
             android:exported="false" />
         <activity
