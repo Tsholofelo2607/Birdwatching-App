@@ -1,11 +1,11 @@
 package com.example.birdapp
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class Login : AppCompatActivity() {
@@ -16,36 +16,34 @@ class Login : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Get the button by its ID
-        val buttonNavigate = findViewById<Button>(R.id.loginButton)
+        auth = FirebaseAuth.getInstance()
 
-        // Set an onClickListener on the button
-        buttonNavigate.setOnClickListener {
-            // Create an intent to navigate to SecondActivity
-            val intent = Intent(this, Map::class.java)
-            startActivity(intent)
-        }
+        val emailEditText = findViewById<EditText>(R.id.emailEditText)
+        val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
+        val loginButton = findViewById<Button>(R.id.loginButton)
 
-            auth = FirebaseAuth.getInstance()
-            val emailEditText = findViewById<EditText>(R.id.emailEditText)
-            val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
-            val loginButton = findViewById<Button>(R.id.loginButton)
+        // Set an onClickListener on the loginButton
+        loginButton.setOnClickListener {
+            val email = emailEditText.text.toString().trim()
+            val password = passwordEditText.text.toString().trim()
 
-            loginButton.setOnClickListener {
-                val email = emailEditText.text.toString()
-                val password = passwordEditText.text.toString()
-
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this) { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
-                            // Navigate to main activity or bird watching screen
-                            startActivity(Intent(this, Login::class.java))
-                            finish()
-                        } else {
-                            Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+                        // Navigate to the map screen
+                        startActivity(Intent(this, Map::class.java))
+                        finish() // Close the login activity
+                    } else {
+                        Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
         }
     }
+}
+
