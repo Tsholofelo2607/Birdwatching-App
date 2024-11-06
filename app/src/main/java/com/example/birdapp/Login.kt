@@ -16,6 +16,16 @@ class Login : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        // Get the button by its ID
+        val buttonNavigate = findViewById<Button>(R.id.loginButton)
+
+        // Set an onClickListener on the button
+        buttonNavigate.setOnClickListener {
+            // Create an intent to navigate to SecondActivity
+            val intent = Intent(this, Map::class.java)
+            startActivity(intent)
+        }
+
             auth = FirebaseAuth.getInstance()
             val emailEditText = findViewById<EditText>(R.id.emailEditText)
             val passwordEditText = findViewById<EditText>(R.id.passwordEditText)

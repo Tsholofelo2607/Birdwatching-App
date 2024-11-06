@@ -1,5 +1,6 @@
 package com.example.birdapp
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,6 +20,16 @@ class observation : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_observation)
+
+        // Get the button by its ID
+        val buttonNavigate = findViewById<Button>(R.id.submitButton)
+
+        // Set an onClickListener on the button
+        buttonNavigate.setOnClickListener {
+            // Create an intent to navigate to SecondActivity
+            val intent = Intent(this, ObservationListActivity::class.java)
+            startActivity(intent)
+        }
 
         // Initialize UI elements
         val speciesNameEditText = findViewById<EditText>(R.id.speciesNameEditText)
