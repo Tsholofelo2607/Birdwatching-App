@@ -3,6 +3,7 @@ package com.example.birdapp
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.widget.Button
@@ -18,6 +19,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class Map : AppCompatActivity(), OnMapReadyCallback {
 
@@ -32,16 +35,48 @@ class Map : AppCompatActivity(), OnMapReadyCallback {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        val buttonNavigate = findViewById<Button>(R.id.button)
-        buttonNavigate.setOnClickListener {
-            val intent = Intent(this, Observation::class.java)
-            startActivity(intent)
-        }
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        setupBottomNavigation()
     }
+    private fun setupBottomNavigation() {
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNav)
+        // Define bottom navigation items and actions
+
+        // Add items to the BottomNavigationView programmatically
+        bottomNavigationView.menu.add(0, R.id.nav_map, 0, "Map").setIcon(R.drawable.map)
+        bottomNavigationView.menu.add(0, R.id.nav_item_observation, 1, "Past Sightings").setIcon(R.drawable.orderhis)
+        bottomNavigationView.menu.add(0, R.id.nav_observation, 2, "Observations").setIcon(R.drawable.binoculars)
+        bottomNavigationView.menu.add(0, R.id.nav_settings, 3, "Settings").setIcon(R.drawable.settings)
+
+        // Set up the item selection listener
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_map -> true // Stay on current activity
+                R.id.nav_item_observation -> {
+                    val intent = Intent(this, ObservationListActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                R.id.nav_observation -> {
+                    startActivity(Intent(this, observation::class.java))
+                    true
+                }
+/*
+                R.id.nav_settings -> {
+                    startActivity(Intent(this, Settings::class.java))
+                    true
+                }*/
+
+                else -> false
+            }
+        }
+    }
+
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
@@ -53,12 +88,28 @@ class Map : AppCompatActivity(), OnMapReadyCallback {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), locationPermissionRequestCode)
         }
 
-        // Add bird-watching hotspots
+        // Add bird-watching hotspots in Johannesburg, South Africa
+        // Add bird-watching hotspots in Johannesburg and Gauteng, South Africa
         val hotspots = listOf(
-            LatLng(40.730610, -73.935242),  // Example hotspot 1
-            LatLng(40.748817, -73.985428),  // Example hotspot 2
-            LatLng(40.785091, -73.968285)   // Example hotspot 3
+            // Existing hotspots in Johannesburg
+            LatLng(-26.1613, 28.0103),  // Delta Park
+            LatLng(-26.1770, 27.9490),  // Melville Koppies Nature Reserve
+            LatLng(-26.1717, 28.0167),  // Johannesburg Botanical Gardens (Emmarentia)
+            LatLng(-26.1467, 27.9094),  // Kloofendal Nature Reserve
+            LatLng(-26.1080, 28.0492),  // Innesfree Park (Sandton)
+            LatLng(-25.9925, 27.8744),  // Ruimsig Nature Reserve
+            LatLng(-26.2883, 27.8894),  // Soweto Bird Sanctuary
+            LatLng(-25.9986, 27.8669),  // Walter Sisulu National Botanical Garden
+            LatLng(-26.5203, 27.8612),  // Suikerbosrand Nature Reserve
+            LatLng(-25.8683, 28.3060),  // Rietvlei Nature Reserve
+            LatLng(-25.7463, 28.2194),  // Groenkloof Nature Reserve
+            LatLng(-25.9744, 27.9027),  // Lion & Safari Park
+            LatLng(-25.9911, 27.9211),  // Hennops River Valley
+            LatLng(-25.9270, 27.6612),  // Magaliesberg Biosphere Reserve
+            LatLng(-25.8558, 28.2867),  // Moreleta Kloof Nature Reserve
+            LatLng(-25.8440, 28.1537)   // Zwartkops Nature Reserve
         )
+
 
         for (hotspot in hotspots) {
             map.addMarker(MarkerOptions().position(hotspot).title("Bird Watching Site"))
@@ -95,16 +146,56 @@ class Map : AppCompatActivity(), OnMapReadyCallback {
 
     private fun showNearbyHotspots(userLoc: LatLng) {
         val hotspots = listOf(
-            LatLng(40.730610, -73.935242),
-            LatLng(40.748817, -73.985428),
-            LatLng(40.785091, -73.968285)
+            LatLng(-26.1613, 28.0103),  // Delta Park
+            LatLng(-26.1770, 27.9490),  // Melville Koppies Nature Reserve
+            LatLng(-26.1717, 28.0167),  // Johannesburg Botanical Gardens (Emmarentia)
+            LatLng(-26.1467, 27.9094),  // Kloofendal Nature Reserve
+            LatLng(-26.1080, 28.0492),  // Innesfree Park (Sandton)
+            LatLng(-25.9925, 27.8744),  // Ruimsig Nature Reserve
+            LatLng(-26.2883, 27.8894),  // Soweto Bird Sanctuary
+            LatLng(-25.9986, 27.8669),  // Walter Sisulu National Botanical Garden
+            LatLng(-26.5203, 27.8612),  // Suikerbosrand Nature Reserve
+            LatLng(-25.8683, 28.3060),  // Rietvlei Nature Reserve
+            LatLng(-25.7463, 28.2194),  // Groenkloof Nature Reserve
+            LatLng(-25.9744, 27.9027),  // Lion & Safari Park
+            LatLng(-25.9911, 27.9211),  // Hennops River Valley
+            LatLng(-25.9270, 27.6612),  // Magaliesberg Biosphere Reserve
+            LatLng(-25.8558, 28.2867),  // Moreleta Kloof Nature Reserve
+            LatLng(-25.8440, 28.1537)   // Zwartkops Nature Reserve
         )
 
+        // Clear any existing markers and polylines
+        map.clear()
+
+        var nearbyHotspotFound = false
+
+        // Iterate over each hotspot to calculate distance and show markers
         for (hotspot in hotspots) {
             val distance = calculateDistance(userLoc.latitude, userLoc.longitude, hotspot.latitude, hotspot.longitude)
-            if (distance <= 5000) {  // Show hotspots within 5 km
-                map.addMarker(MarkerOptions().position(hotspot).title("Nearby Bird Watching Site"))
+
+            if (distance <= 15000) {  // Check for hotspots within 15 km
+                nearbyHotspotFound = true
+
+                // Add a marker at the hotspot with distance in snippet
+                map.addMarker(
+                    MarkerOptions().position(hotspot)
+                        .title("Nearby Bird Watching Site")
+                        .snippet("Distance: ${distance / 1000} km")  // Display distance in km
+                )
+
+                // Draw a polyline from the user's location to the hotspot
+                val polylineOptions = PolylineOptions()
+                    .add(userLoc)  // User's location
+                    .add(hotspot)  // Hotspot location
+                    .width(5f)      // Polyline width
+                    .color(Color.BLUE)  // Polyline color
+                map.addPolyline(polylineOptions)
             }
+        }
+0
+        // Show a message if no nearby hotspots are found within 5 km
+        if (!nearbyHotspotFound) {
+            Toast.makeText(this, "No bird-watching hotspots found within 15 km", Toast.LENGTH_SHORT).show()
         }
     }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
