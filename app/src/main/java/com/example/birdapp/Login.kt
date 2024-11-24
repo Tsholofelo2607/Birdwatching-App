@@ -6,44 +6,49 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.birdapp.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import kotlin.collections.Map
 
 class Login : AppCompatActivity() {
-
+    private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
+        binding.textView.setOnClickListener {
+            val intent = Intent(this , Registration::class.java)
+            startActivity(intent)
+        }
+        binding.button.setOnClickListener{
+            val  email = binding.emailEt.text.toString()
+            val  pass = binding.passET.text.toString()
 
-        val emailEditText = findViewById<EditText>(R.id.emailEditText)
-        val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
-        val loginButton = findViewById<Button>(R.id.loginButton)
 
-        // Set an onClickListener on the loginButton
-        loginButton.setOnClickListener {
-            val email = emailEditText.text.toString().trim()
-            val password = passwordEditText.text.toString().trim()
+            if (email.isNotEmpty() && pass.isNotEmpty()){
 
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
-                        // Navigate to the map screen
-                        startActivity(Intent(this, Map::class.java))
-                        finish() // Close the login activity
-                    } else {
-                        Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                auth.createUserWithEmailAndPassword(email , pass).addOnCompleteListener{
+                    if (it.isSuccessful){
+                        val intent = Intent(this , Map::class.java)
+                        startActivity(intent)
+                    }else{
+                        Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
                     }
                 }
+                val intent = Intent(this , Map::class.java)
+                startActivity(intent)
+            }else {
+                Toast.makeText(this, "Empty field are not allowed", Toast.LENGTH_SHORT).show()
+            }
+
+
         }
+
     }
 }
 
