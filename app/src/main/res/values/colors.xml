@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="green">#5fdd9d</color>
     <color name= "white">#FFFFFF</color>
-    <color name="light_green">#C8E6C9</color>
-    <color name="light_blue">#E0F7FA</color>
     <color name="blue">#242A68</color>
-    <color name="green_button">#1C7C5A</color>
-    <color name="green_font">#2C6050</color>
+    <color name= "light_blue">#5466E8</color>>
 </resources>
