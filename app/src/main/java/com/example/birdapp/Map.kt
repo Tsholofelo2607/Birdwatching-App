@@ -1,12 +1,12 @@
 package com.example.birdapp
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -20,7 +20,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import com.google.android.material.bottomnavigation.BottomNavigationView
+
 
 class Map : AppCompatActivity(), OnMapReadyCallback {
 
@@ -40,85 +40,81 @@ class Map : AppCompatActivity(), OnMapReadyCallback {
             .findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        setupBottomNavigation()
     }
-    private fun setupBottomNavigation() {
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNav)
-        // Define bottom navigation items and actions
-
-        // Add items to the BottomNavigationView programmatically
-        bottomNavigationView.menu.add(0, R.id.nav_map, 0, "Map").setIcon(R.drawable.map)
-        bottomNavigationView.menu.add(0, R.id.nav_item_observation, 1, "Past Sightings").setIcon(R.drawable.orderhis)
-        bottomNavigationView.menu.add(0, R.id.nav_observation, 2, "Observations").setIcon(R.drawable.binoculars)
-        bottomNavigationView.menu.add(0, R.id.nav_settings, 3, "Settings").setIcon(R.drawable.settings)
-
-        // Set up the item selection listener
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_map -> true // Stay on current activity
-                R.id.nav_item_observation -> {
-                    val intent = Intent(this, ObservationListActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                R.id.nav_observation -> {
-                    startActivity(Intent(this, observation::class.java))
-                    true
-                }
-/*
-                R.id.nav_settings -> {
-                    startActivity(Intent(this, Settings::class.java))
-                    true
-                }*/
-
-                else -> false
-            }
-        }
-    }
-
-
+    @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
 
         // Check location permission
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             enableUserLocation()
         } else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), locationPermissionRequestCode)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                locationPermissionRequestCode
+            )
         }
 
-        // Add bird-watching hotspots in Johannesburg, South Africa
-        // Add bird-watching hotspots in Johannesburg and Gauteng, South Africa
+        // Add bird-watching hotspots
         val hotspots = listOf(
-            // Existing hotspots in Johannesburg
             LatLng(-26.1613, 28.0103),  // Delta Park
             LatLng(-26.1770, 27.9490),  // Melville Koppies Nature Reserve
-            LatLng(-26.1717, 28.0167),  // Johannesburg Botanical Gardens (Emmarentia)
-            LatLng(-26.1467, 27.9094),  // Kloofendal Nature Reserve
-            LatLng(-26.1080, 28.0492),  // Innesfree Park (Sandton)
-            LatLng(-25.9925, 27.8744),  // Ruimsig Nature Reserve
-            LatLng(-26.2883, 27.8894),  // Soweto Bird Sanctuary
-            LatLng(-25.9986, 27.8669),  // Walter Sisulu National Botanical Garden
-            LatLng(-26.5203, 27.8612),  // Suikerbosrand Nature Reserve
-            LatLng(-25.8683, 28.3060),  // Rietvlei Nature Reserve
-            LatLng(-25.7463, 28.2194),  // Groenkloof Nature Reserve
-            LatLng(-25.9744, 27.9027),  // Lion & Safari Park
-            LatLng(-25.9911, 27.9211),  // Hennops River Valley
-            LatLng(-25.9270, 27.6612),  // Magaliesberg Biosphere Reserve
-            LatLng(-25.8558, 28.2867),  // Moreleta Kloof Nature Reserve
-            LatLng(-25.8440, 28.1537)   // Zwartkops Nature Reserve
+            // Add more hotspots as needed...
         )
-
 
         for (hotspot in hotspots) {
             map.addMarker(MarkerOptions().position(hotspot).title("Bird Watching Site"))
         }
+
+        // Set a click listener for markers
+        map.setOnMarkerClickListener { marker ->
+            showNavigationOptions(marker.position)
+            true
+        }
     }
+
+
+
+
+    private fun showNavigationOptions(destination: LatLng) {
+        val options = arrayOf("Walking", "Driving")
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle("Choose Navigation Mode")
+        builder.setItems(options) { _, which ->
+            val mode = if (which == 0) "walking" else "driving"
+            openGoogleMapsNavigation(destination, mode)
+        }
+        builder.show()
+    }
+
+    private fun openGoogleMapsNavigation(destination: LatLng, mode: String) {
+        val gmmIntentUri = android.net.Uri.parse(
+            "google.navigation:q=${destination.latitude},${destination.longitude}&mode=${mode[0]}"
+        )
+        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+        mapIntent.setPackage("com.google.android.apps.maps")
+
+        if (mapIntent.resolveActivity(packageManager) != null) {
+            startActivity(mapIntent)
+        } else {
+            Toast.makeText(this, "Google Maps is not installed on this device.", Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+
 
     private fun enableUserLocation() {
         try {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
                 map.isMyLocationEnabled = true
                 fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                     if (location != null) {
@@ -132,16 +128,20 @@ class Map : AppCompatActivity(), OnMapReadyCallback {
                             map.moveCamera(CameraUpdateFactory.newLatLngZoom(userLoc, 12f))
                             showNearbyHotspots(userLoc)
                         } ?: run {
-                            Toast.makeText(this, "Unable to get your location.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Unable to get your location.", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
                 }
             }
         } catch (e: SecurityException) {
-            Toast.makeText(this, "Location permission is required to show nearby bird-watching sites.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "Location permission is required to show nearby bird-watching sites.",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
-
 
 
     private fun showNearbyHotspots(userLoc: LatLng) {
@@ -171,7 +171,12 @@ class Map : AppCompatActivity(), OnMapReadyCallback {
 
         // Iterate over each hotspot to calculate distance and show markers
         for (hotspot in hotspots) {
-            val distance = calculateDistance(userLoc.latitude, userLoc.longitude, hotspot.latitude, hotspot.longitude)
+            val distance = calculateDistance(
+                userLoc.latitude,
+                userLoc.longitude,
+                hotspot.latitude,
+                hotspot.longitude
+            )
 
             if (distance <= 15000) {  // Check for hotspots within 15 km
                 nearbyHotspotFound = true
@@ -192,24 +197,43 @@ class Map : AppCompatActivity(), OnMapReadyCallback {
                 map.addPolyline(polylineOptions)
             }
         }
-0
+
         // Show a message if no nearby hotspots are found within 5 km
         if (!nearbyHotspotFound) {
-            Toast.makeText(this, "No bird-watching hotspots found within 15 km", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "No bird-watching hotspots found within 15 km", Toast.LENGTH_SHORT)
+                .show()
         }
     }
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)  // Ensure calling super
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(
+            requestCode,
+            permissions,
+            grantResults
+        )  // Ensure calling super
         if (requestCode == locationPermissionRequestCode) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 enableUserLocation()
             } else {
-                Toast.makeText(this, "Location permission is required to show nearby bird-watching sites.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Location permission is required to show nearby bird-watching sites.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
-    private fun calculateDistance(userLat: Double, userLng: Double, siteLat: Double, siteLng: Double): Float {
+    private fun calculateDistance(
+        userLat: Double,
+        userLng: Double,
+        siteLat: Double,
+        siteLng: Double
+    ): Float {
         val results = FloatArray(1)
         Location.distanceBetween(userLat, userLng, siteLat, siteLng, results)
         return results[0] // Distance in meters
