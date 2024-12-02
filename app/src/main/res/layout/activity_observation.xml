@@ -59,6 +59,14 @@
             android:inputType="textMultiLine"
             android:minLines="3" />
 
+        <!-- Image Upload -->
+        <Button
+            android:id="@+id/uploadImageButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Upload Image"
+            android:paddingTop="16dp"/>
+
         <!-- Submit Button -->
         <Button
             android:id="@+id/submitButton"
@@ -66,6 +74,5 @@
             android:layout_height="wrap_content"
             android:text="Submit"
             android:paddingTop="16dp"/>
-
     </LinearLayout>
 </ScrollView>

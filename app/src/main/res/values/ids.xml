@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="nav_map" type="id" />
-    <item name="nav_item_observation" type="id"/>
+    <item name="nav_observation_list" type="id"/>
     <item name="nav_observation" type="id" />
     <item name="nav_settings" type="id" />
 </resources>
